@@ -1,0 +1,6 @@
+HC-SR04          ESP32
+-----------------------
+VCC     ->       3.3V
+GND     ->       GND
+TRIG    ->       GPIO 5
+ECHO    ->       GPIO 18
