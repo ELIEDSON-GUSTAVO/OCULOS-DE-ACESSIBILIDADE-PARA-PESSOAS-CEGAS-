@@ -1,0 +1,60 @@
+#include <BluetoothA2DPSink.h>
+
+#define TRIG_PIN 5
+#define ECHO_PIN 18
+
+long duration;
+int distance;
+
+BluetoothA2DPSink a2dp_sink;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  // Inicia o Bluetooth e conecta aos fones de ouvido
+  a2dp_sink.start("ESP32 Audio Alert");
+
+  // Fala inicial de conexão
+  a2dp_sink.set_stream_reader(read_audio_data, true);
+  speak_text("Fones de ouvido conectados.");
+}
+
+void loop() {
+  distance = getDistance();
+  Serial.print("Distância: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  if (distance <= 300) { // 300 cm = 3 metros
+    speak_text("Obstáculo detectado a três metros.");
+    delay(5000); // Evita mensagens repetitivas constantes
+  }
+
+  delay(500); // Aguarda antes de medir novamente
+}
+
+int getDistance() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = duration * 0.034 / 2; // Converte para centímetros
+
+  return distance;
+}
+
+void speak_text(const char* text) {
+  // Simula a leitura de áudio (substitua com um método real de TTS)
+  Serial.println(text);
+  // Aqui, você pode integrar uma biblioteca de TTS ou enviar áudio pré-gravado
+}
+
+// Função simulada para leitura de áudio (substitua com implementação real)
+void read_audio_data(const uint8_t *data, uint32_t length) {
+  // Processar e enviar áudio
+}
